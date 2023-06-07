@@ -8,20 +8,21 @@ using namespace std;
 using namespace ariel;
 
 
+/**
+ ----------------------------- MagicalContainer -----------------------------
+*/
+
 void MagicalContainer::addElement(int element)
 {
-    // Add element at the end
+    // If the vector is empty we just add it
     if (elements.size() == 0)
     {
         elements.push_back(element);
     }
 
-    // Add element at the end
-    // elements.push_back(element);
-
-    // Sort elements after addition
-    // std::sort(elements.begin(), elements.end());
-    else{
+    // Else we would like to insert the element at the right place in O(n)
+    else
+    {
         for ( std::vector<int>::iterator i = elements.begin() ; i < elements.end(); ++i)
         {
             if (element <= *(i))
@@ -30,14 +31,15 @@ void MagicalContainer::addElement(int element)
                 break;  // Inserted the element, so exit the loop
             }
         }
-    // If the element is greater than all existing elements, insert at the end
-    if (element > elements.back())
-    {
-        elements.push_back(element);
-    }
+
+        // If the element is greater than all existing elements, insert at the end
+        if (element > elements.back())
+        {
+            elements.push_back(element);
+        }
     }
     
-
+    // If the element is a prime number we add it to the vector of int pointers
     if (isPrime(element))
     {
         int *pelement = new int(element);
@@ -48,23 +50,24 @@ void MagicalContainer::addElement(int element)
 
 void MagicalContainer::removeElement(int element)
 {
-   // Check if the element exists in elements
+    // Check if the element exists in elements
     auto elementIter = std::find(elements.begin(), elements.end(), element);
 
+    // If it doesn't exist we throw an error
     if (elementIter == elements.end())
     {
         throw std::runtime_error("Element not found");
     }
 
+    // Meaning it exists
     if (elementIter != elements.end())
-    { // Meaning it exists
-
+    {
         // Check if the element exists in primePointers
         auto primeIter = std::find(primePointers.begin(), primePointers.end(), &(*elementIter));
 
+        // If the element is a prime number, remove the element from primePointers and delete the integer pointer
         if (primeIter != primePointers.end())
         {
-            // Remove the element from primePointers and delete the integer pointer
             primePointers.erase(primeIter);
             delete *primeIter;
         }
@@ -94,7 +97,7 @@ bool MagicalContainer::isPrime(int num)
 
 
 /**
- --------------------- AscendingIterator ---------------------
+ ----------------------------- AscendingIterator -----------------------------
 */
 
 MagicalContainer::AscendingIterator::AscendingIterator(MagicalContainer &container,  std::vector<int>::iterator index)
@@ -102,14 +105,11 @@ MagicalContainer::AscendingIterator::AscendingIterator(MagicalContainer &contain
 
 
 MagicalContainer::AscendingIterator::AscendingIterator(MagicalContainer &container)
-: container(container), currentIndex(container.elements.begin()) 
-{
-}
+: container(container), currentIndex(container.elements.begin()) {}
 
 MagicalContainer::AscendingIterator::AscendingIterator(const MagicalContainer::AscendingIterator &other)
 : container(other.container), currentIndex(other.currentIndex) {}
 
-// tidy
 MagicalContainer::AscendingIterator::AscendingIterator(MagicalContainer::AscendingIterator &&other) noexcept
 : container(other.container), currentIndex(other.currentIndex) {}
 
@@ -129,7 +129,6 @@ MagicalContainer::AscendingIterator
     return *this;
 }
 
-// tidy
 MagicalContainer::AscendingIterator
 &MagicalContainer::AscendingIterator::operator=(MagicalContainer::AscendingIterator &&other) noexcept
 {
@@ -187,8 +186,9 @@ MagicalContainer::AscendingIterator MagicalContainer::AscendingIterator::end()
     return AscendingIterator(container, container.elements.end());
 }
 
+
 /**
- --------------------- SideCrossIterator ---------------------
+ ----------------------------- SideCrossIterator -----------------------------
 */
 
 MagicalContainer::SideCrossIterator::SideCrossIterator(MagicalContainer &container, std::vector<int>::iterator right, std::vector<int>::iterator left)
@@ -208,7 +208,6 @@ MagicalContainer::SideCrossIterator::SideCrossIterator(MagicalContainer &contain
 MagicalContainer::SideCrossIterator::SideCrossIterator(const MagicalContainer::SideCrossIterator &other)
 : container(other.container), rightIndex(other.rightIndex), leftIndex(other.leftIndex) {}
 
-// tidy
 MagicalContainer::SideCrossIterator::SideCrossIterator(MagicalContainer::SideCrossIterator &&other) noexcept
 : container(other.container), rightIndex(other.rightIndex), leftIndex(other.leftIndex) {}
 
@@ -228,7 +227,6 @@ MagicalContainer::SideCrossIterator &MagicalContainer::SideCrossIterator::operat
     return *this;
 }
 
-// tidy
 MagicalContainer::SideCrossIterator
 &MagicalContainer::SideCrossIterator::operator=(MagicalContainer::SideCrossIterator &&other) noexcept
 {
@@ -267,27 +265,12 @@ bool MagicalContainer::SideCrossIterator::operator<(const MagicalContainer::Side
 
 int& MagicalContainer::SideCrossIterator::operator*() const
 {
-    
     // if (leftIndex == rightIndex)
     // {
     //     return *leftIndex;
     // }
     // else 
-
-    // if (leftIndex - container.elements.begin() >= container.elements.end() - rightIndex)
-    // {
-    //     return *rightIndex;
-    // }
-    // else
-    // {
-    //     return *leftIndex;
-    // }
-
-    if (leftIndex == rightIndex)
-    {
-        return *leftIndex;
-    }
-    else if (leftIndex - container.elements.begin() >= container.elements.end() - rightIndex)
+    if (leftIndex - container.elements.begin() >= container.elements.end() - rightIndex)
     {
         return *rightIndex;
     }
@@ -299,15 +282,21 @@ int& MagicalContainer::SideCrossIterator::operator*() const
 
 MagicalContainer::SideCrossIterator &MagicalContainer::SideCrossIterator::operator++()
 {
+    // If we already past the mid
     if (half)
     {
         throw std::runtime_error("Iterator increment beyond end");
     }
+
+    // If we now reached the mid
     if (leftIndex == rightIndex)
     {
         half = true;
+        leftIndex = container.elements.end();
+        rightIndex = container.elements.begin();
     }
 
+    // If we are before the mid
     if ((leftIndex - container.elements.begin() >= container.elements.end() - rightIndex) &&
         (rightIndex != container.elements.begin()) && !(half))
     {
@@ -318,41 +307,12 @@ MagicalContainer::SideCrossIterator &MagicalContainer::SideCrossIterator::operat
     {
         ++leftIndex;
     }
-    if (half)
-    {
-        leftIndex = container.elements.end();
-        rightIndex = container.elements.begin();
-    }
     
     return *this;
-
-    // ggggggg
-    // if (leftIndex == rightIndex && !half)
-    // {
-    //     leftIndex = container.elements.end();
-    //     rightIndex = container.elements.begin();
-    //     half = true;
-    // }
-    // else if (leftIndex - container.elements.begin() >= container.elements.end() - rightIndex)
-    // {
-    //     --rightIndex;
-    // }
-    // else
-    // {
-    //     ++leftIndex;
-    // }
-    
-    // return *this;
-
 }
 
 MagicalContainer::SideCrossIterator MagicalContainer::SideCrossIterator::begin()
 {
-    if (container.elements.empty())
-    {
-        return this->end();
-    }
-    
     return SideCrossIterator(container, container.elements.end()-1, container.elements.begin());
 }
 
@@ -363,7 +323,7 @@ MagicalContainer::SideCrossIterator MagicalContainer::SideCrossIterator::end()
 
 
 /**
- --------------------- PrimeIterator ---------------------:
+ ----------------------------- PrimeIterator -----------------------------:
 */
 
 MagicalContainer::PrimeIterator::PrimeIterator(MagicalContainer &container, std::vector<int*>::iterator index)
@@ -375,7 +335,6 @@ MagicalContainer::PrimeIterator::PrimeIterator(MagicalContainer &container)
 MagicalContainer::PrimeIterator::PrimeIterator(const MagicalContainer::PrimeIterator &other)
 : container(other.container), currentIndex(other.currentIndex) {}
 
-// tidy
 MagicalContainer::PrimeIterator::PrimeIterator(MagicalContainer::PrimeIterator &&other) noexcept
 : container(other.container), currentIndex(other.currentIndex) {}
 
@@ -393,7 +352,6 @@ MagicalContainer::PrimeIterator &MagicalContainer::PrimeIterator::operator=(cons
     }
     return *this;}
 
-// tidy
 MagicalContainer::PrimeIterator
 &MagicalContainer::PrimeIterator::operator=(MagicalContainer::PrimeIterator &&other) noexcept
 {
@@ -402,7 +360,8 @@ MagicalContainer::PrimeIterator
         container = other.container;
         currentIndex = other.currentIndex;
     }
-    return *this;}
+    return *this;
+}
 
 bool MagicalContainer::PrimeIterator::operator==(const MagicalContainer::PrimeIterator &other) const
 {

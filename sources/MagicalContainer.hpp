@@ -16,14 +16,11 @@ public:
 
     void addElement(int element);
 
-    void removeElement(int element); // index?
+    void removeElement(int element);
 
     std::size_t size() const { return elements.size(); }
 
     bool isPrime(int num);
-
-    // int get(int index);
-
 
     class AscendingIterator {
 
@@ -72,10 +69,12 @@ public:
         // Pre-increment operator (operator++)
         AscendingIterator& operator++();
 
-        // begin(type)
+        // begin(type) : Returns the appropriate iterator (ascending, cross, or prime)
+        // pointing to the first element of the container based on the specified type.
         AscendingIterator begin();
 
-        // end(type)
+        // end(type) : Returns the appropriate iterator (ascending, cross, or prime)
+        // pointing one position past the last element of the container based on the specified type.
         AscendingIterator end();
 
     };
@@ -130,10 +129,12 @@ public:
         // Pre-increment operator (operator++)
         SideCrossIterator& operator++();
 
-        // begin(type)
+        // begin(type) : Returns the appropriate iterator (ascending, cross, or prime)
+        // pointing to the first element of the container based on the specified type.
         SideCrossIterator begin();
 
-        // end(type)
+        // end(type) : Returns the appropriate iterator (ascending, cross, or prime)
+        // pointing one position past the last element of the container based on the specified type.
         SideCrossIterator end();
     };
 
@@ -183,46 +184,16 @@ public:
         // Pre-increment operator (operator++)
         PrimeIterator& operator++();
 
-        // begin(type)
+        // begin(type) : Returns the appropriate iterator (ascending, cross, or prime)
+        // pointing to the first element of the container based on the specified type.
         PrimeIterator begin();
 
-        // end(type)
+        // end(type) : Returns the appropriate iterator (ascending, cross, or prime)
+        // pointing one position past the last element of the container based on the specified type.
         PrimeIterator end();
     };
 
 
 };
-
-/**
-
-operations for each iterator:
-• Default constructor
-• Copy constructor
-• Destructor
-• Assignment operator
-• Equality comparison (operator==)
-• Inequality comparison (operator!=)
-• GT, LT comparison (operator>, operator<) all comparison operators only valid for iterators of the same type of order
-  and should compare the location of the iterator in the container and not the element inside. Example bellow.
-  Using operators on iterators of different type or different containers should throw an examtion.
-• Dereference operator (operator*)
-• Pre-increment operator (operator++)
-• begin(type): Returns the appropriate iterator (ascending, cross, or prime) pointing to the first element
-  of the container based on the specified type.
-• end(type): Returns the appropriate iterator (ascending, cross, or prime) pointing one position past the last element
-  of the container based on the specified type.
-
- Example: say our container contains the numbers 1,2,4,5,14 the iterators will return the elements
- in the following order:
-• Ascending: 1,2,4,5,14. operator> should return true on 5>2, 14>1
-• prime: 2,5. operator> should return true on 5>2
-• cross: 1,14,2,5,4 (one from the start then one from the end). operator> should return true on 5>14, 2>1, 4>14
-
-All iterators should work in O(1) in both memory and time complexity.
-Iterators should NOT be detached from the main container.
-If one adds an element to a container after an iterator is created,
-the iterator should know the element return it should its turn will come.
-
- */
 
 #endif

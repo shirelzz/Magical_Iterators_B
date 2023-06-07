@@ -11,18 +11,31 @@ using namespace ariel;
 void MagicalContainer::addElement(int element)
 {
     // Add element at the end
-    elements.push_back(element);
+    if (elements.size() == 0)
+    {
+        elements.push_back(element);
+    }
+
+    // Add element at the end
+    // elements.push_back(element);
 
     // Sort elements after addition
-    std::sort(elements.begin(), elements.end());
-
-    // for (int i = 0; i < elements.size() - 1; ++i)
-    // {
-    //     if (element <= elements.at(i+1))
-    //     {
-    //         elements.insert(elements.begin() + i, element);
-    //     }
-    // }
+    // std::sort(elements.begin(), elements.end());
+    else{
+        for ( std::vector<int>::iterator i = elements.begin() ; i < elements.end(); ++i)
+        {
+            if (element <= *(i))
+            {
+                elements.insert(i, element);
+                break;  // Inserted the element, so exit the loop
+            }
+        }
+    // If the element is greater than all existing elements, insert at the end
+    if (element > elements.back())
+    {
+        elements.push_back(element);
+    }
+    }
     
 
     if (isPrime(element))
@@ -182,7 +195,15 @@ MagicalContainer::SideCrossIterator::SideCrossIterator(MagicalContainer &contain
 : container(container), rightIndex(right), leftIndex(left) {}
 
 MagicalContainer::SideCrossIterator::SideCrossIterator(MagicalContainer &container)
-: container(container), rightIndex(container.elements.end() - 1), leftIndex(container.elements.begin()) {}
+: container(container), rightIndex(container.elements.end() - 1), leftIndex(container.elements.begin())
+{
+    if (container.elements.empty())
+    {
+        rightIndex = container.elements.begin();
+        leftIndex = container.elements.end();   
+ }
+    
+}
 
 MagicalContainer::SideCrossIterator::SideCrossIterator(const MagicalContainer::SideCrossIterator &other)
 : container(other.container), rightIndex(other.rightIndex), leftIndex(other.leftIndex) {}
